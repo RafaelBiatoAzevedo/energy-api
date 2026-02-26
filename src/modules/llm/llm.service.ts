@@ -2,10 +2,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { ExtractedInvoice } from './llm.types';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class LlmService {
   private anthropic: Anthropic;
+
+  private readonly logger = new Logger(LlmService.name);
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
@@ -67,7 +70,7 @@ export class LlmService {
 
       return parsed;
     } catch (error) {
-      console.error('Erro ao processar PDF com Claude:', error);
+      this.logger.error('Erro ao processar PDF', error as Error);
 
       throw new InternalServerErrorException(
         'Erro ao processar PDF com Claude',
