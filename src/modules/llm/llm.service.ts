@@ -51,23 +51,65 @@ export class LlmService {
         model: 'deepseek/deepseek-chat',
         messages: [
           {
+            role: 'system',
+            content:
+              'Você é um especialista em extração de dados de faturas de energia elétrica brasileiras.',
+          },
+          {
             role: 'user',
-            content: `
-Extraia os seguintes dados da fatura abaixo.
-Retorne APENAS JSON válido neste formato:
+            content: `Extraia os seguintes dados da fatura abaixo.
 
-{
-  "installationNumber": string,
-  "utilityCompany": string,
-  "referenceMonth": string,
-  "consumptionKwh": number,
-  "totalAmount": number,
-  "taxes": number
-}
+            Regras importantes:
+            - Retorne APENAS JSON válido.
+            - Não inclua explicações.
+            - Para CNPJ e CPF, remova qualquer caractere não numérico (., -, /, espaços), mantendo apenas dígitos.
+            - Valores monetários devem ser retornados como number.
+            - Remova "R$", espaços e formatação.
+            - Converta vírgula para ponto decimal.
+            - Se um campo não estiver presente, ilegível ou não puder ser determinado com confiança:
+              - Retorne null para campos string.
+              - Retorne 0 para campos number.
+            - Datas devem ser retornadas no formato ISO 8601 (YYYY-MM-DD).
+              - Não inclua horário.
+              - Converta datas no formato brasileiro (DD/MM/YYYY) para YYYY-MM-DD.
+            - Sempre normalize "referenceMonth" para o formato ISO parcial YYYY-MM.
+              - O mês deve conter dois dígitos.
+              - Ignore qualquer outro formato textual.
+            - "unitPrice": corresponde ao valor identificado como "Preço Unitário", normalmente apresentado em R$/kWh.
+            - "unitTaxe": corresponde ao valor identificado como "Tarifa Unitária", também em R$/kWh, podendo aparecer apenas como "Tarifa".
+            - Caso existam ambos no documento, extraia separadamente.
+            - Caso apenas um exista, preencha o correspondente e retorne 0 para o outro.
+            - O campo "publicLightingContributionAmount" corresponde ao valor identificado no PDF como:
+            "Contrib Ilum Publica Municipal" ou "Contribuição Iluminação Pública Municipal".
 
-FATURA:
-${pdfText}
-            `,
+            Formato esperado:
+            {
+              "companyName": string,
+              "companyCnpj": string,
+              "clientNumber": string,
+              "clientName": string,
+              "installationNumber": string,
+              "referenceMonth": string,
+              "dueDate": string,
+              "issueDate": string"
+              "consumptionElectricalEnergyKwh": number,
+              "electricalEnergyUnitPrice": number,
+              "electricalEnergyUnitTaxe": number,
+              "electricalEnergyAmount": number,
+              "consumptionEnergySCEEKwh": number,
+              "energySCEEUnitPrice": number,
+              "energySCEEUnitTaxe": number,
+              "energySCEEAmount": number,
+              "consumptionEnergyGDKwh": number,
+              "energyGDUnitPrice": number
+              "energyGDUnitTaxe": number
+              "energyGDAmount": number,
+              "publicLightingContributionAmount": number
+              "totalAmount": number,
+            }
+
+            FATURA:
+          ${pdfText}`,
           },
         ],
         temperature: 0,

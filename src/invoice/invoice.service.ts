@@ -24,13 +24,11 @@ export class InvoiceService {
 
     const extracted: ExtractedInvoice = rawResponse;
 
-    const calculatedTotal = extracted.consumptionKwh * 0.95;
-    const difference = extracted.totalAmount - calculatedTotal;
+    // const calculatedTotal = extracted.consumptionKwh * 0.95;
+    // const difference = extracted.totalAmount - calculatedTotal;
 
     return {
       ...extracted,
-      calculatedTotal,
-      difference,
     };
   }
 }
