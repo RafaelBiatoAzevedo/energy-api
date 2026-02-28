@@ -1,79 +1,98 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Anthropic from '@anthropic-ai/sdk';
+import pdf from 'pdf-parse';
+import OpenAI from 'openai';
 import { ExtractedInvoice } from './llm.types';
-import { Logger } from '@nestjs/common';
+
+//type PdfParseType = (buffer: Buffer) => Promise<{ text: string }>;
+
+interface PdfData {
+  text: string;
+  numpages: number;
+  info: any;
+  metadata: any;
+  version: string;
+}
 
 @Injectable()
 export class LlmService {
-  private anthropic: Anthropic;
-
   private readonly logger = new Logger(LlmService.name);
+  private openai: OpenAI;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+    const apiKey = this.configService.get<string>('OPENROUTER_API_KEY');
 
     if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY não definida');
+      throw new Error('OPENROUTER_API_KEY não definida');
     }
 
-    this.anthropic = new Anthropic({
+    this.openai = new OpenAI({
       apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
     });
   }
 
-  async extractInvoiceFromPdf(pdfBase64: string) {
+  async extractInvoiceFromPdf(pdfBase64: string): Promise<ExtractedInvoice> {
     try {
-      const response = await this.anthropic.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 2000,
+      const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const pdfData = await pdf(pdfBuffer);
+
+      const pdfText = (pdfData as PdfData).text;
+
+      if (!pdfText || pdfText.trim().length === 0) {
+        throw new Error('Não foi possível extrair texto do PDF');
+      }
+      const response = await this.openai.chat.completions.create({
+        model: 'deepseek/deepseek-chat',
         messages: [
           {
             role: 'user',
-            content: [
-              {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: 'application/pdf',
-                  data: pdfBase64,
-                },
-              },
-              {
-                type: 'text',
-                text: `
-                      Extraia os seguintes dados da fatura de energia elétrica.
-                      Retorne APENAS JSON válido neste formato:
+            content: `
+Extraia os seguintes dados da fatura abaixo.
+Retorne APENAS JSON válido neste formato:
 
-                      {
-                        "installationNumber": string,
-                        "utilityCompany": string,
-                        "referenceMonth": string,
-                        "consumptionKwh": number,
-                        "totalAmount": number,
-                        "taxes": number
-                      }
-                `,
-              },
-            ],
+{
+  "installationNumber": string,
+  "utilityCompany": string,
+  "referenceMonth": string,
+  "consumptionKwh": number,
+  "totalAmount": number,
+  "taxes": number
+}
+
+FATURA:
+${pdfText}
+            `,
           },
         ],
+        temperature: 0,
       });
 
-      const content = response.content[0];
+      const content = response.choices[0]?.message?.content;
 
-      if (content.type !== 'text') {
-        throw new Error('Resposta inesperada do modelo');
+      if (!content) {
+        throw new Error('Resposta vazia do modelo');
       }
 
-      const parsed = JSON.parse(content.text) as ExtractedInvoice;
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+
+      if (!jsonMatch) {
+        throw new Error('Modelo não retornou JSON válido');
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]) as ExtractedInvoice;
 
       return parsed;
     } catch (error) {
       this.logger.error('Erro ao processar PDF', error as Error);
 
       throw new InternalServerErrorException(
-        'Erro ao processar PDF com Claude',
+        'Erro ao processar PDF com OpenRouter',
       );
     }
   }
