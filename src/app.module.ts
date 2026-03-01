@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { LlmModule } from './modules/llm/llm.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { envValidationSchema } from './shared/config/env.validation';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { envValidationSchema } from './shared/config/env.validation';
     }),
     LlmModule,
     InvoiceModule,
+    DashboardModule,
   ],
   controllers: [AppController],
 })

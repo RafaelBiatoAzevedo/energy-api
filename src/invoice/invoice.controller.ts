@@ -10,11 +10,18 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InvoiceService } from './invoice.service';
 
-import { ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiConsumes,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UploadInvoiceDto } from './dto/upload-invoice.dto';
 import { ListInvoicesQueryDto } from './dto/list-invoice-query.dto';
+import { InvoicesResponseDto } from './dto/invoice-response.dto';
 
-@ApiTags('invoice')
+@ApiTags('Invoice')
 @Controller('invoice')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
@@ -57,16 +64,21 @@ export class InvoiceController {
   @Get()
   @ApiOperation({
     summary: 'List invoices with filters',
-    description: `
-      Returns a paginated list of processed energy invoices.
-
-      Allows optional filtering by:
-      - Client number
-      - Reference month range (startMonth and endMonth)
-
-      Results are ordered by referenceMonth in descending order.
-      Includes client and company information in the response.
-    `,
+    description: [
+      'Returns a paginated list of processed energy invoices.',
+      '',
+      'Allows optional filtering by:',
+      '- Client number',
+      '- Reference month range (startMonth and endMonth)',
+      '',
+      'Results are ordered by referenceMonth in descending order.',
+      'Includes client and company information in the response.',
+    ].join('\n'),
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Data returned successfully.',
+    type: InvoicesResponseDto,
   })
   async list(@Query() query: ListInvoicesQueryDto) {
     return this.invoiceService.listInvoices(query);

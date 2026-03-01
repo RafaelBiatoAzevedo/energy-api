@@ -6,23 +6,29 @@ export const ExtractedInvoiceSchema = z.object({
   installationNumber: z.string(),
   clientNumber: z.string(),
   referenceMonth: z.string(),
-  consumptionElectricalEnergyKwh: z.number(),
-  electricalEnergyAmount: z.number(),
-  publicLightingContributionAmount: z.number(),
-  totalAmount: z.number(),
+
   clientName: z.string(),
   dueDate: z.string(),
   issueDate: z.string(),
-  consumptionEnergySCEEKwh: z.number(),
-  energySCEEAmount: z.number(),
-  consumptionEnergyGDKwh: z.number(),
-  energyGDAmount: z.number(),
+
+  consumptionElectricalEnergyKwh: z.number(),
   electricalEnergyUnitPrice: z.number(),
   electricalEnergyUnitTaxe: z.number(),
+  electricalEnergyAmount: z.number(),
+
+  consumptionEnergySCEEKwh: z.number(),
   energySCEEUnitPrice: z.number(),
   energySCEEUnitTaxe: z.number(),
-  energyGDUnitPrice: z.number(),
-  energyGDUnitTaxe: z.number(),
+  energySCEEAmount: z.number(),
+
+  compensatedEnergyGDKwh: z.number(),
+  compensatedEnergyGDUnitPrice: z.number(),
+  compensatedEnergyGDUnitTaxe: z.number(),
+  compensatedEnergyGDAmount: z.number(),
+
+  publicLightingContributionAmount: z.number(),
+
+  totalAmount: z.number(),
 });
 
 export type ExtractedInvoice = z.infer<typeof ExtractedInvoiceSchema>;

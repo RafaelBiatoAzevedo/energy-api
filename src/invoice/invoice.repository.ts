@@ -50,17 +50,10 @@ export class InvoiceRepository {
 
           consumptionElectricalEnergyKwh:
             data.extracted.consumptionElectricalEnergyKwh,
-          consumptionEnergySCEEKwh:
-            data.invoiceCalculatedValues.consumptionEnergySCEEKwh,
-          consumptionEnergyGDKwh: data.extracted.consumptionEnergyGDKwh,
-          consumptionTotalKwh:
-            data.invoiceCalculatedValues.consumptionElectricalEnergyKwhTotal,
-
-          energyAmount: data.invoiceCalculatedValues.energyAmount,
-          energyGDAmount: data.invoiceCalculatedValues.energyGDAmount,
-          publicLightingContributionAmount:
-            data.extracted.publicLightingContributionAmount,
-          totalAmount: data.extracted.totalAmount,
+          consumptionEnergySCEEKwh: data.extracted.consumptionEnergySCEEKwh,
+          consumptionTotalKwh: data.invoiceCalculatedValues.consumptionTotalKwh,
+          compensatedEnergyGDKwh:
+            data.invoiceCalculatedValues.compensatedEnergyGDKwh,
 
           electricalEnergyUnitPrice: data.extracted.electricalEnergyUnitPrice,
           electricalEnergyUnitTaxe: data.extracted.electricalEnergyUnitTaxe,
@@ -70,8 +63,17 @@ export class InvoiceRepository {
           energySCEEUnitTaxe: data.extracted.energySCEEUnitTaxe,
           energySCEEAmount: data.extracted.energySCEEAmount,
 
-          energyGDUnitPrice: data.extracted.energyGDUnitPrice,
-          energyGDUnitTaxe: data.extracted.energyGDUnitTaxe,
+          compensatedEnergyGDUnitPrice:
+            data.extracted.compensatedEnergyGDUnitPrice,
+          compensatedEnergyGDUnitTaxe:
+            data.extracted.compensatedEnergyGDUnitTaxe,
+          compensatedEnergyGDAmount:
+            data.invoiceCalculatedValues.compensatedEnergyGDAmount,
+
+          publicLightingContributionAmount:
+            data.extracted.publicLightingContributionAmount,
+          energyAmount: data.invoiceCalculatedValues.energyAmount,
+          totalAmount: data.extracted.totalAmount,
 
           rawJson: data.extracted,
 

@@ -38,24 +38,26 @@ export class InvoiceService {
   private InvoiceCalculationService(
     data: ExtractedInvoice,
   ): InvoiceCalculatedValues {
-    const consumptionElectricalEnergyKwhTotal =
+    const consumptionTotalKwh =
       (data.consumptionElectricalEnergyKwh ?? 0) +
       (data.consumptionEnergySCEEKwh ?? 0);
 
-    const consumptionEnergySCEEKwh = data.consumptionEnergySCEEKwh ?? 0;
+    const compensatedEnergyGDKwh = data.compensatedEnergyGDKwh ?? 0;
 
     const energyAmount =
       (data.electricalEnergyAmount ?? 0) +
       (data.energySCEEAmount ?? 0) +
       (data.publicLightingContributionAmount ?? 0);
 
-    const energyGDAmount = Math.abs(data.energyGDAmount ?? 0);
+    const compensatedEnergyGDAmount = Math.abs(
+      data.compensatedEnergyGDAmount ?? 0,
+    );
 
     return {
-      consumptionElectricalEnergyKwhTotal,
-      consumptionEnergySCEEKwh,
+      consumptionTotalKwh,
+      compensatedEnergyGDKwh,
       energyAmount,
-      energyGDAmount,
+      compensatedEnergyGDAmount,
     };
   }
 

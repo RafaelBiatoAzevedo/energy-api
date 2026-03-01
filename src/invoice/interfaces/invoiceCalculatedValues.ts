@@ -1,6 +1,6 @@
 export interface InvoiceCalculatedValues {
-  consumptionElectricalEnergyKwhTotal: number;
-  consumptionEnergySCEEKwh: number;
+  consumptionTotalKwh: number;
+  compensatedEnergyGDKwh: number;
   energyAmount: number;
-  energyGDAmount: number;
+  compensatedEnergyGDAmount: number;
 }

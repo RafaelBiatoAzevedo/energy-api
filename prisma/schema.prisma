@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -38,12 +37,9 @@ model EnergyInvoice {
 
   consumptionElectricalEnergyKwh Float
   consumptionEnergySCEEKwh       Float
-  consumptionEnergyGDKwh         Float
-  consumptionTotalKwh            Float
-
-  energyAmount  Decimal @db.Decimal(15,2)
-  totalAmount   Decimal @db.Decimal(15,2)
-  publicLightingContributionAmount Decimal @db.Decimal(15,2)
+  consumptionTotalKwh           Float
+  
+  compensatedEnergyGDKwh         Float
 
   electricalEnergyUnitPrice  Decimal @db.Decimal(15,2)
   electricalEnergyUnitTaxe  Decimal @db.Decimal(15,2)
@@ -53,9 +49,15 @@ model EnergyInvoice {
   energySCEEUnitTaxe  Decimal @db.Decimal(15,2)
   energySCEEAmount  Decimal @db.Decimal(15,2)
 
-  energyGDUnitPrice Decimal @db.Decimal(15,2)
-  energyGDUnitTaxe  Decimal @db.Decimal(15,2)
-  energyGDAmount  Decimal @db.Decimal(15,2)
+  compensatedEnergyGDUnitPrice Decimal @db.Decimal(15,2)
+  compensatedEnergyGDUnitTaxe  Decimal @db.Decimal(15,2)
+  compensatedEnergyGDAmount  Decimal @db.Decimal(15,2)
+
+  publicLightingContributionAmount Decimal @db.Decimal(15,2)
+  
+  energyAmount  Decimal @db.Decimal(15,2)
+
+  totalAmount   Decimal @db.Decimal(15,2)
 
   rawJson Json
 

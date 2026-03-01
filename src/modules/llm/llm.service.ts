@@ -39,7 +39,7 @@ export class LlmService {
   async extractInvoiceFromPdf(pdfBase64: string): Promise<ExtractedInvoice> {
     try {
       const pdfBuffer = Buffer.from(pdfBase64, 'base64');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const pdfData = await pdf(pdfBuffer);
 
       const pdfText = (pdfData as PdfData).text;
@@ -100,10 +100,10 @@ export class LlmService {
               "energySCEEUnitPrice": number,
               "energySCEEUnitTaxe": number,
               "energySCEEAmount": number,
-              "consumptionEnergyGDKwh": number,
-              "energyGDUnitPrice": number
-              "energyGDUnitTaxe": number
-              "energyGDAmount": number,
+              "compensatedEnergyGDKwh": number,
+              "compensatedEnergyGDUnitPrice": number
+              "compensatedEnergyGDUnitTaxe": number
+              "compensatedEnergyGDAmount": number,
               "publicLightingContributionAmount": number
               "totalAmount": number,
             }
