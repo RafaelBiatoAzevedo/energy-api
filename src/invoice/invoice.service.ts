@@ -4,6 +4,7 @@ import { ExtractedInvoiceSchema } from '../modules/llm/llm.types';
 import { ExtractedInvoice } from '../modules/llm/llm.types';
 import { InvoiceCalculatedValues } from './interfaces/invoiceCalculatedValues';
 import { InvoiceRepository } from './invoice.repository';
+import { ListInvoicesQueryDto } from './dto/list-invoice-query.dto';
 
 @Injectable()
 export class InvoiceService {
@@ -56,5 +57,9 @@ export class InvoiceService {
       energyAmount,
       energyGDAmount,
     };
+  }
+
+  async listInvoices(query: ListInvoicesQueryDto) {
+    return this.repository.listInvoices(query);
   }
 }
