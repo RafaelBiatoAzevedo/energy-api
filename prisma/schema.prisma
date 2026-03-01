@@ -6,14 +6,64 @@ datasource db {
   provider = "postgresql"
 }
 
-model EnergyInvoice {
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  cnpj      String   @unique
+  clients   Client[]
+  createdAt DateTime @default(now())
+}
+
+model Client {
   id                 String   @id @default(uuid())
+  name               String
+  clientNumber       String
   installationNumber String
-  utilityCompany     String
-  referenceMonth     String
-  consumptionKwh     Float
-  totalAmount        Float
-  taxes              Float
-  rawJson            Json
+  companyId          String
+  company            Company  @relation(fields: [companyId], references: [id])
+  invoices           EnergyInvoice[]
   createdAt          DateTime @default(now())
+
+  @@unique([installationNumber, companyId])
+  @@index([companyId])
+}
+
+model EnergyInvoice {
+  id            String   @id @default(uuid())
+
+  referenceMonth String
+  dueDate        DateTime
+  issueDate      DateTime
+
+  consumptionElectricalEnergyKwh Float
+  consumptionEnergySCEEKwh       Float
+  consumptionEnergyGDKwh         Float
+  consumptionTotalKwh            Float
+
+  energyAmount  Decimal @db.Decimal(15,2)
+  totalAmount   Decimal @db.Decimal(15,2)
+  publicLightingContributionAmount Decimal @db.Decimal(15,2)
+
+  electricalEnergyUnitPrice  Decimal @db.Decimal(15,2)
+  electricalEnergyUnitTaxe  Decimal @db.Decimal(15,2)
+  electricalEnergyAmount  Decimal @db.Decimal(15,2)
+
+  energySCEEUnitPrice Decimal @db.Decimal(15,2)
+  energySCEEUnitTaxe  Decimal @db.Decimal(15,2)
+  energySCEEAmount  Decimal @db.Decimal(15,2)
+
+  energyGDUnitPrice Decimal @db.Decimal(15,2)
+  energyGDUnitTaxe  Decimal @db.Decimal(15,2)
+  energyGDAmount  Decimal @db.Decimal(15,2)
+
+  rawJson Json
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([referenceMonth, clientId])
+  @@index([clientId])
+  @@index([referenceMonth])
 }

@@ -1,34 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { LlmService } from '../modules/llm/llm.service';
-//import { ExtractedInvoiceSchema } from '../modules/llm/llm.schema';
+import { ExtractedInvoiceSchema } from '../modules/llm/llm.types';
 import { ExtractedInvoice } from '../modules/llm/llm.types';
+import { InvoiceCalculatedValues } from './interfaces/invoiceCalculatedValues';
+import { InvoiceRepository } from './invoice.repository';
 
 @Injectable()
 export class InvoiceService {
-  constructor(private readonly llmService: LlmService) {}
+  constructor(
+    private readonly llmService: LlmService,
+    private repository: InvoiceRepository,
+  ) {}
 
   async processInvoice(buffer: Buffer) {
     const pdfBase64 = buffer.toString('base64');
 
-    const rawResponse = await this.llmService.extractInvoiceFromPdf(pdfBase64);
+    const rawJson = await this.llmService.extractInvoiceFromPdf(pdfBase64);
 
-    // // 3️⃣ Validar com Zod
-    // const parsed = ExtractedInvoiceSchema.safeParse(rawResponse);
+    const parsed = ExtractedInvoiceSchema.safeParse(rawJson);
 
-    // if (!parsed.success) {
-    //   throw new BadRequestException({
-    //     message: 'Invalid invoice data returned by LLM',
-    //     errors: parsed.error.flatten(),
-    //   });
-    // }
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid invoice data returned by LLM',
+        errors: parsed.error.flatten(),
+      });
+    }
 
-    const extracted: ExtractedInvoice = rawResponse;
+    const invoiceCalculated = this.InvoiceCalculationService(rawJson);
 
-    // const calculatedTotal = extracted.consumptionKwh * 0.95;
-    // const difference = extracted.totalAmount - calculatedTotal;
+    return this.repository.saveInvoice({
+      extracted: rawJson,
+      invoiceCalculatedValues: invoiceCalculated,
+    });
+  }
+
+  private InvoiceCalculationService(
+    data: ExtractedInvoice,
+  ): InvoiceCalculatedValues {
+    const consumptionElectricalEnergyKwhTotal =
+      (data.consumptionElectricalEnergyKwh ?? 0) +
+      (data.consumptionEnergySCEEKwh ?? 0);
+
+    const consumptionEnergySCEEKwh = data.consumptionEnergySCEEKwh ?? 0;
+
+    const energyAmount =
+      (data.electricalEnergyAmount ?? 0) +
+      (data.energySCEEAmount ?? 0) +
+      (data.publicLightingContributionAmount ?? 0);
+
+    const energyGDAmount = Math.abs(data.energyGDAmount ?? 0);
 
     return {
-      ...extracted,
+      consumptionElectricalEnergyKwhTotal,
+      consumptionEnergySCEEKwh,
+      energyAmount,
+      energyGDAmount,
     };
   }
 }
