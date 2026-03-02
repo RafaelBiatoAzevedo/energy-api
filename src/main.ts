@@ -29,7 +29,10 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+
+  if (process.env.NODE_ENV !== 'production') {
+    await app.listen(port);
+  }
 }
 export default bootstrap();
 bootstrap();
