@@ -1,98 +1,65 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+📑 Smart Invoice Extractor (NestJS + LLM)
+  Sistema inteligente para processamento, extração e gestão de faturas de energia elétrica, utilizando Inteligência Artificial para transformar documentos não estruturados (PDF) em dados acionáveis.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+🚀 Tecnologias e Decisões Arquiteturais
+  A arquitetura foi pensada para ser escalável, tipada e de fácil manutenção.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🏗️ Decisões de Design
+  Validação de Resposta da IA: LLMs podem sofrer "alucinações". Implementamos uma camada de validação com Zod imediatamente após a resposta do LLM. Se a IA omitir um campo obrigatório ou mudar o tipo do dado,
+  o sistema rejeita a entrada antes que ela chegue ao banco.
+  
+  Transações Atômicas: No InvoiceRepository, o registro da empresa, do cliente e da fatura ocorre dentro de uma $transaction do Prisma. Isso evita dados órfãos se houver falha no meio do processo.
+  
+  Prompt Engineering: O prompt enviado ao LLM está configurado para retornar apenas JSON puro, facilitando o parse e reduzindo o consumo de tokens.
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tecnologia - Escolha - Por que?
 
-## Project setup
+Framework -	NestJS -	Pela arquitetura modular e injeção de dependência, facilitando testes e organização.
+Linguagem	- TypeScript -	Segurança de tipos em todo o fluxo, essencial ao lidar com objetos JSON complexos vindos de LLMs.
+ORM -	Prisma - Agilidade na modelagem de dados e Type Safety nas consultas ao banco de dados.
+Banco de Dados -	PostgreSQL -Confiabilidade relacional para garantir a integridade dos dados de faturas e clientes.
+LLM -	OpenRouter / OpenAI -	Utilizado para processamento de linguagem natural (NLP). O OpenRouter foi escolhido pela flexibilidade de trocar entre modelos (GPT-4o, Claude, etc.) sem mudar o código.
+Validação	Zod	Garantia de que o JSON retornado pela IA segue rigorosamente o contrato de dados esperado antes de salvar no banco.
 
-```bash
-$ yarn install
-```
+⚙️ Configuração do Ambiente
+  Crie um arquivo .env na raiz do projeto com as seguintes chaves:
+  obs: existe um .env.example na raiz do projeto
 
-## Compile and run the project
+  - Banco de Dados
+    DATABASE_URL="postgresql://user:password@localhost:5432/invoice_db?schema=public"
+  
+  - Inteligência Artificial
+    # Se usar OpenRouter:
+    OPENROUTER_API_KEY=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
+    
+    # Server
+    PORT=3000
 
-```bash
-# development
-$ yarn run start
 
-# watch mode
-$ yarn run start:dev
 
-# production mode
-$ yarn run start:prod
-```
+🛠️ Instalação e Execução
+  1 - Instalar dependências:
+    yarn
+  
+  2 - Configurar o banco de dados (Migrations):
+    npx prisma migrate dev
+    
+  3 - Executar em modo desenvolvimento:
+    yarn start
+  
 
-## Run tests
+🧪 Testes
+  O projeto conta com uma suíte de testes rigorosa para garantir que o processamento de PDFs e cálculos financeiros não quebrem.
+    yarn test
+  
 
-```bash
-# unit tests
-$ yarn run test
+📡 API Endpoints & Exemplos
+1 - Upload de Fatura (Processamento via IA)
+  POST /invoice/upload
 
-# e2e tests
-$ yarn run test:e2e
+2 - Listagem de Faturas
+  GET /invoice?clientNumber=123456&page=1
 
-# test coverage
-$ yarn run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+3 - Dashboard
+  GET /dashboard
