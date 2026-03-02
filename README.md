@@ -1,65 +1,113 @@
-📑 Smart Invoice Extractor (NestJS + LLM)
-  Sistema inteligente para processamento, extração e gestão de faturas de energia elétrica, utilizando Inteligência Artificial para transformar documentos não estruturados (PDF) em dados acionáveis.
+Aqui está o conteúdo formatado em Markdown pronto para você copiar e colar. Ele utiliza tabelas, blocos de código e uma hierarquia visual limpa para facilitar a leitura.
 
-🚀 Tecnologias e Decisões Arquiteturais
-  A arquitetura foi pensada para ser escalável, tipada e de fácil manutenção.
+---
 
-🏗️ Decisões de Design
-  Validação de Resposta da IA: LLMs podem sofrer "alucinações". Implementamos uma camada de validação com Zod imediatamente após a resposta do LLM. Se a IA omitir um campo obrigatório ou mudar o tipo do dado,
-  o sistema rejeita a entrada antes que ela chegue ao banco.
-  
-  Transações Atômicas: No InvoiceRepository, o registro da empresa, do cliente e da fatura ocorre dentro de uma $transaction do Prisma. Isso evita dados órfãos se houver falha no meio do processo.
-  
-  Prompt Engineering: O prompt enviado ao LLM está configurado para retornar apenas JSON puro, facilitando o parse e reduzindo o consumo de tokens.
+# 📑 Smart Invoice Extractor (NestJS + LLM)
+
+Sistema inteligente para processamento, extração e gestão de faturas de energia elétrica, utilizando Inteligência Artificial para transformar documentos não estruturados (PDF) em dados acionáveis.
+
+---
+
+## 🚀 Tecnologias e Decisões Arquiteturais
+
+A arquitetura foi pensada para ser escalável, tipada e de fácil manutenção.
+
+| Tecnologia | Escolha | Por que? |
+| --- | --- | --- |
+| **Framework** | **NestJS** | Pela arquitetura modular e injeção de dependência, facilitando testes e organização. |
+| **Linguagem** | **TypeScript** | Segurança de tipos em todo o fluxo, essencial ao lidar com objetos JSON complexos vindos de LLMs. |
+| **ORM** | **Prisma** | Agilidade na modelagem de dados e Type Safety nas consultas ao banco de dados. |
+| **Banco de Dados** | **PostgreSQL** | Confiabilidade relacional para garantir a integridade dos dados de faturas e clientes. |
+| **LLM** | **OpenRouter / OpenAI** | Flexibilidade de trocar entre modelos (GPT-4o, Claude, etc.) sem mudar o código através do OpenRouter. |
+| **Validação** | **Zod** | Garantia de que o JSON retornado pela IA segue rigorosamente o contrato de dados esperado. |
+
+---
+
+## 🏗️ Decisões de Design
+
+* **Validação de Resposta da IA:** LLMs podem sofrer "alucinações". Implementamos uma camada de validação com **Zod** imediatamente após a resposta do LLM. Se a IA omitir um campo ou mudar um tipo de dado, o sistema rejeita a entrada antes que ela chegue ao banco.
+* **Transações Atômicas:** No `InvoiceRepository`, o registro da empresa, do cliente e da fatura ocorre dentro de uma `$transaction` do Prisma. Isso evita a criação de dados órfãos caso ocorra uma falha no meio do processo de salvamento.
+* **Prompt Engineering:** O prompt enviado ao LLM está configurado para retornar estritamente JSON puro, facilitando o parse e reduzindo drasticamente o consumo de tokens e latência.
+
+---
+
+## ⚙️ Configuração do Ambiente
+
+Crie um arquivo `.env` na raiz do projeto seguindo o modelo do arquivo `.env.example` já existente:
+
+```env
+# Banco de Dados
+DATABASE_URL="postgresql://user:password@localhost:5432/invoice_db?schema=public"
+
+# Inteligência Artificial (OpenRouter)
+OPENROUTER_API_KEY=sk-or-v1-aab5079dde64...
+
+# Server
+PORT=3000
+
+```
+
+---
+
+## 🛠️ Instalação e Execução
+
+1. **Instalar dependências:**
+```bash
+yarn
+
+```
 
 
-Tecnologia - Escolha - Por que?
+2. **Configurar o banco de dados (Migrations):**
+```bash
+npx prisma migrate dev
 
-Framework -	NestJS -	Pela arquitetura modular e injeção de dependência, facilitando testes e organização.
-Linguagem	- TypeScript -	Segurança de tipos em todo o fluxo, essencial ao lidar com objetos JSON complexos vindos de LLMs.
-ORM -	Prisma - Agilidade na modelagem de dados e Type Safety nas consultas ao banco de dados.
-Banco de Dados -	PostgreSQL -Confiabilidade relacional para garantir a integridade dos dados de faturas e clientes.
-LLM -	OpenRouter / OpenAI -	Utilizado para processamento de linguagem natural (NLP). O OpenRouter foi escolhido pela flexibilidade de trocar entre modelos (GPT-4o, Claude, etc.) sem mudar o código.
-Validação	Zod	Garantia de que o JSON retornado pela IA segue rigorosamente o contrato de dados esperado antes de salvar no banco.
+```
 
-⚙️ Configuração do Ambiente
-  Crie um arquivo .env na raiz do projeto com as seguintes chaves:
-  obs: existe um .env.example na raiz do projeto
 
-  Banco de Dados
-    DATABASE_URL="postgresql://user:password@localhost:5432/invoice_db?schema=public"
-  
-  Inteligência Artificial
-    Se usar OpenRouter:
-    OPENROUTER_API_KEY=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
-    
-  Server
-   PORT=3000
+3. **Executar em modo desenvolvimento:**
+```bash
+yarn start
+
+```
 
 
 
-🛠️ Instalação e Execução
-  1 - Instalar dependências:
-    yarn
-  
-  2 - Configurar o banco de dados (Migrations):
-    npx prisma migrate dev
-    
-  3 - Executar em modo desenvolvimento:
-    yarn start
-  
+---
 
-🧪 Testes
-  O projeto conta com uma suíte de testes rigorosa para garantir que o processamento de PDFs e cálculos financeiros não quebrem.
-    yarn test
-  
+## 🧪 Testes
 
-📡 API Endpoints & Exemplos
-1 - Upload de Fatura (Processamento via IA)
-  POST /invoice/upload
+O projeto conta com uma suíte de testes rigorosa para garantir a integridade do processamento de PDFs e dos cálculos financeiros.
 
-2 - Listagem de Faturas
-  GET /invoice?clientNumber=123456&page=1
+```bash
+# Executar todos os testes
+yarn test
 
-3 - Dashboard
-  GET /dashboard
+```
+
+---
+
+## 📡 API Endpoints & Exemplos
+
+### 1. Upload de Fatura (Processamento via IA)
+
+Extrai dados do PDF e persiste no banco de dados.
+
+* **POST** `/invoice/upload`
+* **Body**: `multipart/form-data` (arquivo no campo `file`)
+
+### 2. Listagem de Faturas
+
+Filtre e pagine as faturas extraídas.
+
+* **GET** `/invoice?clientNumber=123456&page=1`
+
+### 3. Dashboard
+
+Dados consolidados para visualização de indicadores.
+
+* **GET** `/dashboard`
+
+---
+
+**Dica:** Ficou com alguma dúvida sobre a integração com o OpenRouter ou sobre o esquema do banco? Me chame! 🚀
