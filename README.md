@@ -37,7 +37,7 @@ Crie um arquivo `.env` na raiz do projeto seguindo o modelo do arquivo `.env.exa
 DATABASE_URL="postgresql://user:password@localhost:5432/invoice_db?schema=public"
 
 # Inteligência Artificial (OpenRouter)
-OPENROUTER_API_KEY=sk-or-v1-aab5079dde64...
+OPENROUTER_API_KEY=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
 
 # Server
 PORT=3000
@@ -105,6 +105,3 @@ Dados consolidados para visualização de indicadores.
 
 * **GET** `/dashboard`
 
----
-
-**Dica:** Ficou com alguma dúvida sobre a integração com o OpenRouter ou sobre o esquema do banco? Me chame! 🚀
