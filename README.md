@@ -1,6 +1,3 @@
-Aqui está o conteúdo formatado em Markdown pronto para você copiar e colar. Ele utiliza tabelas, blocos de código e uma hierarquia visual limpa para facilitar a leitura.
-
----
 
 # 📑 Smart Invoice Extractor (NestJS + LLM)
 
