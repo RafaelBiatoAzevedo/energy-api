@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ExtractedInvoice } from 'src/modules/llm/llm.types';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { ExtractedInvoice } from '../modules/llm/llm.types';
+import { PrismaService } from '../prisma/prisma.service';
 import { InvoiceCalculatedValues } from './interfaces/invoiceCalculatedValues';
 import { ListInvoicesQueryDto } from './dto/list-invoice-query.dto';
 import { Prisma } from '@prisma/client';

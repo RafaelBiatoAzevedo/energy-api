@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceService } from './invoice.service';
-import { LlmModule } from 'src/modules/llm/llm.module';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { LlmModule } from '../modules/llm/llm.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { InvoiceRepository } from './invoice.repository';
 
 @Module({

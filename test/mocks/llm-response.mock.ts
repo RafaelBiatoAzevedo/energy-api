@@ -1,0 +1,26 @@
+export const mockLLMResponse = {
+  companyName: 'CEMIG',
+  companyCnpj: '06981180000116',
+  clientNumber: '123456',
+  clientName: 'JOSE TESTE',
+  installationNumber: '987654',
+  referenceMonth: '2024-06',
+  dueDate: '2024-07-02',
+  issueDate: '2024-06-12',
+  consumptionElectricalEnergyKwh: 100,
+  electricalEnergyUnitPrice: 0.9,
+
+  electricalEnergyUnitTaxe: 0.05,
+  energySCEEUnitTaxe: 0.02,
+  compensatedEnergyGDUnitTaxe: 0,
+
+  electricalEnergyAmount: 95.0,
+  consumptionEnergySCEEKwh: 400,
+  energySCEEUnitPrice: 0.5,
+  energySCEEAmount: 208.0,
+  compensatedEnergyGDKwh: 400,
+  compensatedEnergyGDUnitPrice: 0.48,
+  compensatedEnergyGDAmount: 192.0,
+  publicLightingContributionAmount: 50.0,
+  totalAmount: 161.0,
+};
