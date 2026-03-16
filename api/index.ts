@@ -22,7 +22,11 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(nestApp, config);
-  SwaggerModule.setup('docs', nestApp, document);
+  SwaggerModule.setup('docs', nestApp, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   // eslint-disable-next-line @typescript-eslint/await-thenable
   await nestApp.enableCors();
