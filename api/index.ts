@@ -3,6 +3,8 @@ import { AppModule } from '../src/app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 let app;
 
 async function bootstrap() {
@@ -12,6 +14,15 @@ async function bootstrap() {
     AppModule,
     new ExpressAdapter(expressApp),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Energy API')
+    .setDescription('API for managing energy bills')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(nestApp, config);
+  SwaggerModule.setup('docs', nestApp, document);
 
   // eslint-disable-next-line @typescript-eslint/await-thenable
   await nestApp.enableCors();
