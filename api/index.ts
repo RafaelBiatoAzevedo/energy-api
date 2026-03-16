@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import serverlessExpress from '@vendia/serverless-express';
 import express from 'express';
 
-let cachedServer;
+let app;
 
 async function bootstrap() {
   const expressApp = express();
@@ -16,16 +15,14 @@ async function bootstrap() {
 
   await nestApp.init();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return serverlessExpress({ app: expressApp });
+  return expressApp;
 }
 
 export default async function handler(req, res) {
-  if (!cachedServer) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    cachedServer = await bootstrap();
+  if (!app) {
+    app = await bootstrap();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-  return cachedServer(req, res);
+  return app(req, res);
 }
