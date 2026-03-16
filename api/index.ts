@@ -13,6 +13,9 @@ async function bootstrap() {
     new ExpressAdapter(expressApp),
   );
 
+  // eslint-disable-next-line @typescript-eslint/await-thenable
+  await nestApp.enableCors();
+
   await nestApp.init();
 
   return expressApp;
