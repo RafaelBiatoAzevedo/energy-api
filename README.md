@@ -102,3 +102,9 @@ Filtre e pagine as faturas extraídas.
 Dados consolidados para visualização de indicadores.
 
 - **GET** `/dashboard`
+
+🌐 Deploy
+O projeto está configurado para deploy via Vercel, garantindo baixa latência e alta disponibilidade para o cliente final.
+link: https://energy-api-six.vercel.app/docs
+
+Desenvolvido por Rafael Azevedo 🚀
